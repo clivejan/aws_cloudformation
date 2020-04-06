@@ -4,3 +4,6 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-0ce21b51cb31a48b8  # Amazon Linux 2 AMI in us-weat-2
+      Tags:
+        - Key: Name
+          Value: A simple example
