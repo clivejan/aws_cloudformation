@@ -1,0 +1,51 @@
+Parameters:
+  EnvironmentSize:
+    Description: "Select Environment Size (S, M, L)"
+    Type: String
+    Default: SMALL
+    AllowedValues:
+      - SMALL
+      - MEDIUM
+      - LARGE
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      AmazonLinux2: ami-0fc61db8544a617ed
+    us-east-2:
+      AmazonLinux2: ami-0e01ce4ee18447327
+    us-west-1:
+      AmazonLinux2: ami-09a7fe78668f1e2c0
+    us-west-2:
+      AmazonLinux2: ami-0ce21b51cb31a48b8
+    ca-central-1:
+      AmazonLinux2: ami-0bf54ac1b628cf143
+  InstanceSize:
+    SMALL:
+      EC2: t2.micro
+      DB: db.t2.micro
+    MEDIUM:
+      EC2: t2.small
+      DB: db.t2.small
+    LARGE:
+      EC2: t2.medium
+      DB: db.t2.medium          
+
+Resources:
+  DB:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      AllocatedStorage: 5
+      StorageType: gp2
+      DBInstanceClass: !FindInMap [InstanceSize, !Ref EnvironmentSize, DB]
+      DBName: wordpress
+      Engine: MySQL
+      MasterUsername: wordpress
+      MasterUserPassword: 1qaz2wsx
+  EC2:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !FindInMap [RegionMap, !Ref 'AWS::Region',  AmazonLinux2]
+      InstanceType: !FindInMap [InstanceSize, !Ref EnvironmentSize, EC2]
+  S3:
+    Type: 'AWS::S3::Bucket'  # AWS names the bucket based by the stack name with random string
